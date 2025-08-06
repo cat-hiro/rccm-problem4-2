@@ -4,18 +4,8 @@ let correctAnswers = 0;
 let filteredQuestions = [];
 let answered = false;
 
-// 全問題データを統合
-let questionData = [];
-
 function initializeApp() {
-    // 全ての問題データを統合
-    questionData = [
-        ...questionsPart1,
-        ...questionsPart2,
-        ...questionsPart3,
-        ...questionsPart4,
-        ...questionsPart5
-    ];
+    // questionDataは既にall-questions.jsで定義済み
 
     // ローディング表示
     document.getElementById('loading').style.display = 'block';
@@ -243,4 +233,5 @@ document.getElementById('yearSelect').addEventListener('change', function() {
 // アプリケーションの初期化
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
+
 });
