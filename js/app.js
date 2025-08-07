@@ -5,10 +5,22 @@ let filteredQuestions = [];
 let answered = false;
 let correctQuestionIds = new Set(); // 正解済み問題のID
 
+// 全問題データを統合
+let questionData = [];
+
 // ローカルストレージのキー
 const STORAGE_KEY = 'rccm-correct-questions';
 
 function initializeApp() {
+    // 全ての問題データを統合
+    questionData = [
+        ...questionsPart1,
+        ...questionsPart2,
+        ...questionsPart3,
+        ...questionsPart4,
+        ...questionsPart5
+    ];
+
     // 正解済み問題をローカルストレージから読み込み
     loadCorrectQuestions();
 
