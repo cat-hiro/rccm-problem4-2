@@ -3,36 +3,23 @@ let userAnswers = [];
 let correctAnswers = 0;
 let filteredQuestions = [];
 let answered = false;
-let correctQuestionIds = new Set(); // 正解済み問題のID
+let correctQuestionIds = new Set();
 
-// 全問題データを統合
-let questionData = [];
-
-// ローカルストレージのキー
 const STORAGE_KEY = 'rccm-correct-questions';
 
-questionData = [
-    ...questionsPart1
-    // ...questionsPart2,
-    // ...questionsPart3,
-    // ...questionsPart4,
-    // ...questionsPart5
-    ];
-
-    // 正解済み問題をローカルストレージから読み込み
+function initializeApp() {
+    // questionDataは all-questions-complete.js で定義済み
+    
     loadCorrectQuestions();
 
-    // ローディング表示
     document.getElementById('loading').style.display = 'block';
     document.getElementById('questionContent').style.display = 'none';
     
-    // 少し遅延してから問題を読み込み（ローディング効果）
     setTimeout(() => {
         filterQuestions();
         loadQuestion();
         updateProgress();
         
-        // ローディングを隠して問題を表示
         document.getElementById('loading').style.display = 'none';
         document.getElementById('questionContent').style.display = 'block';
     }, 500);
@@ -54,13 +41,11 @@ function resetProgress() {
         correctQuestionIds.clear();
         saveCorrectQuestions();
         
-        // アプリを再初期化
         currentQuestionIndex = 0;
         userAnswers = [];
         correctAnswers = 0;
         answered = false;
         
-        // 表示を更新
         document.getElementById('completedMessage').style.display = 'none';
         document.getElementById('questionContent').style.display = 'block';
         
@@ -71,7 +56,6 @@ function resetProgress() {
 }
 
 function getQuestionId(question) {
-    // 年度と問題番号で一意のIDを生成
     return `${question.year}-${question.number}`;
 }
 
@@ -81,13 +65,11 @@ function filterQuestions() {
     
     if (selectedYear === 'all') {
         questions = [...questionData];
-        // 全年度の場合はシャッフル
         shuffleArray(questions);
     } else {
         questions = questionData.filter(q => q.year === selectedYear);
     }
     
-    // 正解済みの問題を除外
     filteredQuestions = questions.filter(q => !correctQuestionIds.has(getQuestionId(q)));
     
     currentQuestionIndex = 0;
@@ -95,7 +77,6 @@ function filterQuestions() {
     correctAnswers = 0;
     answered = false;
     
-    // 出題可能な問題がない場合
     if (filteredQuestions.length === 0) {
         showCompletedMessage();
     }
@@ -140,7 +121,6 @@ function loadQuestion() {
         choiceDiv.innerHTML = `<span class="choice-label">${String.fromCharCode(97 + index)}.</span>${choice}`;
         
         if (answered) {
-            // 既に回答済みの場合
             choiceDiv.classList.add('disabled');
             if (index === question.correct) {
                 choiceDiv.classList.add('correct');
@@ -148,18 +128,15 @@ function loadQuestion() {
                 choiceDiv.classList.add('incorrect');
             }
         } else {
-            // 未回答の場合、クリックイベントを設定
             choiceDiv.onclick = () => selectChoice(index);
         }
 
         choicesContainer.appendChild(choiceDiv);
     });
 
-    // ボタンの状態を更新
     document.getElementById('prevBtn').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
     document.getElementById('nextBtn').style.display = answered ? 'block' : 'none';
 
-    // 結果エリアの表示/非表示
     const resultArea = document.getElementById('resultArea');
     if (answered) {
         resultArea.classList.add('show');
@@ -178,18 +155,15 @@ function selectChoice(index) {
     const question = filteredQuestions[currentQuestionIndex];
     userAnswers[currentQuestionIndex] = index;
 
-    // 正解をチェック
     const isCorrect = index === question.correct;
     if (isCorrect) {
         correctAnswers++;
-        // 正解した問題をセットに追加
         correctQuestionIds.add(getQuestionId(question));
         saveCorrectQuestions();
     }
 
-    // 選択肢の表示を更新
     document.querySelectorAll('.choice').forEach((choice, choiceIndex) => {
-        choice.onclick = null; // クリックを無効化
+        choice.onclick = null;
         choice.classList.add('disabled');
         
         if (choiceIndex === question.correct) {
@@ -199,12 +173,8 @@ function selectChoice(index) {
         }
     });
 
-    // 結果を表示
     showAnswerResult();
-    
-    // 次の問題ボタンを表示
     document.getElementById('nextBtn').style.display = 'block';
-
     updateProgress();
 }
 
@@ -213,24 +183,21 @@ function showAnswerResult() {
     const userAnswer = userAnswers[currentQuestionIndex];
     const isCorrect = userAnswer === question.correct;
 
-    // 結果エリアを表示
     const resultArea = document.getElementById('resultArea');
     const resultStatus = document.getElementById('resultStatus');
     const explanationText = document.getElementById('explanationText');
 
     resultArea.classList.add('show');
 
-    // 正解・不正解の表示
     if (isCorrect) {
         resultStatus.textContent = '✅ 正解！';
         resultStatus.className = 'result-status correct';
     } else {
-        const correctLetter = String.fromCharCode(97 + question.correct); // a, b, c, d
+        const correctLetter = String.fromCharCode(97 + question.correct);
         resultStatus.textContent = `❌ 不正解（正解は ${correctLetter}）`;
         resultStatus.className = 'result-status incorrect';
     }
 
-    // 解説を表示
     explanationText.textContent = question.explanation;
 }
 
@@ -298,9 +265,7 @@ function restartQuiz() {
     loadQuestion();
 }
 
-// 年度選択の変更イベント
 document.getElementById('yearSelect').addEventListener('change', function() {
-    // ローディング表示
     document.getElementById('loading').style.display = 'block';
     document.getElementById('questionContent').style.display = 'none';
     document.getElementById('completedMessage').style.display = 'none';
@@ -316,8 +281,6 @@ document.getElementById('yearSelect').addEventListener('change', function() {
     }, 300);
 });
 
-// アプリケーションの初期化
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
-
