@@ -3,9 +3,14 @@ let userAnswers = [];
 let correctAnswers = 0;
 let filteredQuestions = [];
 let answered = false;
+let correctQuestionIds = new Set(); // 正解済み問題のID
+
+// ローカルストレージのキー
+const STORAGE_KEY = 'rccm-correct-questions';
 
 function initializeApp() {
-    // questionDataは既にall-questions.jsで定義済み
+    // 正解済み問題をローカルストレージから読み込み
+    loadCorrectQuestions();
 
     // ローディング表示
     document.getElementById('loading').style.display = 'block';
@@ -23,20 +28,72 @@ function initializeApp() {
     }, 500);
 }
 
+function loadCorrectQuestions() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        correctQuestionIds = new Set(JSON.parse(saved));
+    }
+}
+
+function saveCorrectQuestions() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...correctQuestionIds]));
+}
+
+function resetProgress() {
+    if (confirm('学習進捗をリセットしますか？正解済みの問題も再び出題されるようになります。')) {
+        correctQuestionIds.clear();
+        saveCorrectQuestions();
+        
+        // アプリを再初期化
+        currentQuestionIndex = 0;
+        userAnswers = [];
+        correctAnswers = 0;
+        answered = false;
+        
+        // 表示を更新
+        document.getElementById('completedMessage').style.display = 'none';
+        document.getElementById('questionContent').style.display = 'block';
+        
+        filterQuestions();
+        loadQuestion();
+        updateProgress();
+    }
+}
+
+function getQuestionId(question) {
+    // 年度と問題番号で一意のIDを生成
+    return `${question.year}-${question.number}`;
+}
+
 function filterQuestions() {
     const selectedYear = document.getElementById('yearSelect').value;
+    let questions;
+    
     if (selectedYear === 'all') {
-        filteredQuestions = [...questionData];
+        questions = [...questionData];
         // 全年度の場合はシャッフル
-        shuffleArray(filteredQuestions);
+        shuffleArray(questions);
     } else {
-        filteredQuestions = questionData.filter(q => q.year === selectedYear);
+        questions = questionData.filter(q => q.year === selectedYear);
     }
+    
+    // 正解済みの問題を除外
+    filteredQuestions = questions.filter(q => !correctQuestionIds.has(getQuestionId(q)));
     
     currentQuestionIndex = 0;
     userAnswers = new Array(filteredQuestions.length).fill(null);
     correctAnswers = 0;
     answered = false;
+    
+    // 出題可能な問題がない場合
+    if (filteredQuestions.length === 0) {
+        showCompletedMessage();
+    }
+}
+
+function showCompletedMessage() {
+    document.getElementById('questionContent').style.display = 'none';
+    document.getElementById('completedMessage').style.display = 'block';
 }
 
 function shuffleArray(array) {
@@ -47,6 +104,11 @@ function shuffleArray(array) {
 }
 
 function loadQuestion() {
+    if (filteredQuestions.length === 0) {
+        showCompletedMessage();
+        return;
+    }
+    
     if (currentQuestionIndex >= filteredQuestions.length) {
         showResults();
         return;
@@ -107,8 +169,12 @@ function selectChoice(index) {
     userAnswers[currentQuestionIndex] = index;
 
     // 正解をチェック
-    if (index === question.correct) {
+    const isCorrect = index === question.correct;
+    if (isCorrect) {
         correctAnswers++;
+        // 正解した問題をセットに追加
+        correctQuestionIds.add(getQuestionId(question));
+        saveCorrectQuestions();
     }
 
     // 選択肢の表示を更新
@@ -149,7 +215,8 @@ function showAnswerResult() {
         resultStatus.textContent = '✅ 正解！';
         resultStatus.className = 'result-status correct';
     } else {
-        resultStatus.textContent = '❌ 不正解';
+        const correctLetter = String.fromCharCode(97 + question.correct); // a, b, c, d
+        resultStatus.textContent = `❌ 不正解（正解は ${correctLetter}）`;
         resultStatus.className = 'result-status incorrect';
     }
 
@@ -226,13 +293,16 @@ document.getElementById('yearSelect').addEventListener('change', function() {
     // ローディング表示
     document.getElementById('loading').style.display = 'block';
     document.getElementById('questionContent').style.display = 'none';
+    document.getElementById('completedMessage').style.display = 'none';
     
     setTimeout(() => {
         filterQuestions();
         loadQuestion();
         
         document.getElementById('loading').style.display = 'none';
-        document.getElementById('questionContent').style.display = 'block';
+        if (filteredQuestions.length > 0) {
+            document.getElementById('questionContent').style.display = 'block';
+        }
     }, 300);
 });
 
