@@ -1,25 +1,398 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>RCCM過去問題（平成20〜令和元年度）</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCCM農業部門 択一問題アプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .year-selector select {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-weight: bold;
+        }
+
+        .score {
+            color: #27ae60;
+        }
+
+        .question-container {
+            padding: 30px;
+            min-height: 500px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .question-number {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .question-year {
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            white-space: pre-line;
+        }
+
+        .choices {
+            margin-bottom: 30px;
+        }
+
+        .choice {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .choice:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .choice.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .choice.correct {
+            border-color: #27ae60;
+            background: #d4edda;
+        }
+
+        .choice.incorrect {
+            border-color: #e74c3c;
+            background: #f8d7da;
+        }
+
+        .choice.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .choice-label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-right: 10px;
+        }
+
+        .result-area {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            display: none;
+        }
+
+        .result-area.show {
+            display: block;
+        }
+
+        .result-status {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .result-status.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .result-status.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+        }
+
+        .explanation h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .explanation-text {
+            white-space: pre-line;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .result-summary {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        .result-summary h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .result-score {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .result-score.excellent {
+            color: #27ae60;
+        }
+
+        .result-score.good {
+            color: #f39c12;
+        }
+
+        .result-score.poor {
+            color: #e74c3c;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .progress-info {
+                justify-content: center;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .question-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .question-container {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>RCCM過去問題（平成20〜令和元年度）</h1>
-    <div id="question-container">
-      <p id="question-text"></p>
-      <img id="question-image" src="" alt="" style="display:none; max-width: 100%; height: auto;">
-      <div id="choices"></div>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 RCCM農業部門 択一問題アプリ</h1>
+            <p>過去問題で実力アップ！（平成22年度〜令和元年度）</p>
+        </div>
+
+        <div class="controls">
+            <div class="year-selector">
+                <label for="yearSelect">出題年度:</label>
+                <select id="yearSelect">
+                    <option value="all">全年度ランダム</option>
+                    <option value="2019">令和元年度</option>
+                    <option value="2018">平成30年度</option>
+                    <option value="2017">平成29年度</option>
+                    <option value="2016">平成28年度</option>
+                    <option value="2015">平成27年度</option>
+                    <option value="2014">平成26年度</option>
+                    <option value="2013">平成25年度</option>
+                    <option value="2012">平成24年度</option>
+                    <option value="2011">平成23年度</option>
+                    <option value="2010">平成22年度</option>
+                </select>
+            </div>
+            <div class="progress-info">
+                <span>問題 <span id="currentQuestion">1</span> / <span id="totalQuestions">5</span></span>
+                <span class="score">正解率: <span id="scorePercent">0</span>%</span>
+            </div>
+        </div>
+
+        <div class="question-container">
+            <div class="loading" id="loading">
+                問題を読み込み中...
+            </div>
+
+            <div id="questionContent" style="display:none;">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumber">問題 1</div>
+                    <div class="question-year" id="questionYear">平成22年度</div>
+                </div>
+
+                <div class="question-text" id="questionText">
+                    問題を読み込み中...
+                </div>
+
+                <div class="choices" id="choices">
+                    <!-- 選択肢がここに動的に生成されます -->
+                </div>
+
+                <div class="result-area" id="resultArea">
+                    <div class="result-status" id="resultStatus"></div>
+                    <div class="explanation" id="explanation">
+                        <h4>📝 解説</h4>
+                        <div class="explanation-text" id="explanationText"></div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">⬅️ 前の問題</button>
+                    <button class="btn btn-success" id="nextBtn" onclick="nextQuestion()" style="display:none;">➡️ 次の問題</button>
+                </div>
+            </div>
+
+            <div class="result-summary" id="resultSummary" style="display:none;">
+                <h3>🎉 お疲れさまでした！</h3>
+                <div class="result-score" id="finalScore">80%</div>
+                <p id="resultMessage">素晴らしい成績です！</p>
+                <button class="btn btn-primary" onclick="restartQuiz()">🔄 もう一度挑戦</button>
+            </div>
+        </div>
     </div>
-    <div id="result"></div>
-    <div class="bottom-buttons">
-      <button id="next-button">次の問題へ</button>
-      <button id="reset-button">リセット</button>
-    </div>
-  </div>
-  <script src="script.js"></script>
+
+    <script src="data/all-questions.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
