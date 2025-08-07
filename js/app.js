@@ -11,14 +11,12 @@ let questionData = [];
 // ローカルストレージのキー
 const STORAGE_KEY = 'rccm-correct-questions';
 
-function initializeApp() {
-    // 全ての問題データを統合
-    questionData = [
-        ...questionsPart1,
-        ...questionsPart2,
-        ...questionsPart3,
-        ...questionsPart4,
-        ...questionsPart5
+questionData = [
+    ...questionsPart1
+    // ...questionsPart2,
+    // ...questionsPart3,
+    // ...questionsPart4,
+    // ...questionsPart5
     ];
 
     // 正解済み問題をローカルストレージから読み込み
@@ -322,3 +320,4 @@ document.getElementById('yearSelect').addEventListener('change', function() {
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
+
