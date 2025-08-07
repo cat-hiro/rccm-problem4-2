@@ -101,8 +101,8 @@ function loadQuestion() {
     }
     
     if (currentQuestionIndex >= filteredQuestions.length) {
-        showResults();
-        return;
+        // 最後の問題を超えた場合は最初に戻る
+        currentQuestionIndex = 0;
     }
 
     const question = filteredQuestions[currentQuestionIndex];
@@ -203,6 +203,10 @@ function showAnswerResult() {
 
 function nextQuestion() {
     currentQuestionIndex++;
+    // 最後の問題を超えた場合は最初に戻る
+    if (currentQuestionIndex >= filteredQuestions.length) {
+        currentQuestionIndex = 0;
+    }
     answered = false;
     loadQuestion();
 }
@@ -229,28 +233,6 @@ function updateProgress() {
     
     const percentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
     document.getElementById('scorePercent').textContent = percentage;
-}
-
-function showResults() {
-    const percentage = Math.round((correctAnswers / filteredQuestions.length) * 100);
-    const finalScoreElement = document.getElementById('finalScore');
-    const resultMessageElement = document.getElementById('resultMessage');
-
-    finalScoreElement.textContent = `${correctAnswers}/${filteredQuestions.length} (${percentage}%)`;
-
-    if (percentage >= 80) {
-        finalScoreElement.className = 'result-score excellent';
-        resultMessageElement.textContent = '素晴らしい成績です！よく理解されています。';
-    } else if (percentage >= 60) {
-        finalScoreElement.className = 'result-score good';
-        resultMessageElement.textContent = '良い成績です！もう少し頑張りましょう。';
-    } else {
-        finalScoreElement.className = 'result-score poor';
-        resultMessageElement.textContent = '復習が必要です。基礎から見直しましょう。';
-    }
-
-    document.getElementById('questionContent').style.display = 'none';
-    document.getElementById('resultSummary').style.display = 'block';
 }
 
 function restartQuiz() {
