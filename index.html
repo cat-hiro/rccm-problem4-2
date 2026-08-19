@@ -3,22 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RCCM試験 過去問マスター（問題4-2 河川、砂防及び海岸・海洋部門）</title>
+  <title>RCCM 問題4-2 学習アプリ</title>
   <style>
     :root {
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
       --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --correct-color: #16a34a;
-      --correct-bg: #dcfce7;
-      --incorrect-color: #dc2626;
-      --incorrect-bg: #fee2e2;
-      --warning-color: #d97706;
-      --warning-bg: #fef3c7;
+      --border: #e2e8f0;
+      --correct: #16a34a;
+      --wrong: #dc2626;
     }
 
     * {
@@ -29,154 +25,102 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
+      background-color: var(--bg);
+      color: var(--text);
       line-height: 1.6;
-      padding: 16px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      background-color: var(--card);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
     }
 
+    /* ヘッダー */
     header {
-      background-color: var(--card-bg);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      color: var(--text-main);
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .controls {
-      background-color: var(--card-bg);
       padding: 16px;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
       align-items: center;
       justify-content: space-between;
-    }
-
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    select, button {
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      font-size: 0.95rem;
       background-color: #fff;
-      color: var(--text-main);
-      cursor: pointer;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    button.btn-primary {
-      background-color: var(--primary-color);
-      color: #fff;
-      border: none;
-      font-weight: 500;
+    header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
     }
 
-    button.btn-primary:hover {
-      background-color: var(--primary-hover);
-    }
-
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      padding: 0 4px;
-    }
-
-    .card {
-      background-color: var(--card-bg);
-      border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      padding: 24px;
-      margin-bottom: 20px;
-      border: 1px solid var(--border-color);
-    }
-
-    .q-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
-    }
-
-    .q-badge {
+    .status-badge {
       font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 9999px;
+      background-color: var(--bg);
+      color: var(--text-muted);
       font-weight: 600;
+    }
+
+    /* メインコンテンツ（スクロール領域） */
+    main {
+      flex: 1;
+      padding: 16px 16px 90px; /* 固定フッターと重ならないよう下部余白を確保 */
+      overflow-y: auto;
+    }
+
+    .meta-info {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
       background-color: #e0f2fe;
       color: #0369a1;
-      padding: 4px 8px;
-      border-radius: 4px;
     }
 
-    .q-flag-badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 6px;
-    }
-
-    .badge-multiple {
-      background-color: var(--warning-bg);
-      color: var(--warning-color);
-      border: 1px solid #fde68a;
-    }
-
-    .q-text {
+    .question-text {
       font-size: 1.05rem;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 16px;
       white-space: pre-wrap;
     }
 
-    .q-image-container {
+    /* 問題画像コンテナ */
+    .figure-container {
+      display: none;
+      margin-bottom: 16px;
       text-align: center;
-      margin-bottom: 20px;
-      padding: 12px;
-      background-color: #f8fafc;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
     }
 
-    .q-image-container img {
+    .figure-container.active {
+      display: block;
+    }
+
+    .figure-container img {
       max-width: 100%;
       height: auto;
-      max-height: 380px;
-      border-radius: 4px;
-      object-fit: contain;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      background-color: #ffffff;
+      border-radius: 6px;
+      border: 1px solid var(--border);
     }
 
-    .options {
+    /* 選択肢 */
+    .options-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -184,18 +128,18 @@
     }
 
     .option-btn {
+      width: 100%;
       text-align: left;
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background-color: #fff;
+      padding: 12px 14px;
       font-size: 0.95rem;
-      line-height: 1.5;
-      transition: all 0.2s ease;
+      background-color: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
       cursor: pointer;
+      transition: all 0.2s;
       display: flex;
-      align-items: flex-start;
       gap: 8px;
+      line-height: 1.5;
     }
 
     .option-btn:hover:not(:disabled) {
@@ -203,381 +147,258 @@
       border-color: #cbd5e1;
     }
 
-    .option-btn:disabled {
-      cursor: default;
-    }
-
     .option-btn.selected-correct {
-      background-color: var(--correct-bg);
-      border-color: var(--correct-color);
-      color: #14532d;
+      background-color: #f0fdf4;
+      border-color: var(--correct);
+      color: #166534;
       font-weight: 600;
     }
 
-    .option-btn.selected-incorrect {
-      background-color: var(--incorrect-bg);
-      border-color: var(--incorrect-color);
-      color: #7f1d1d;
+    .option-btn.selected-wrong {
+      background-color: #fef2f2;
+      border-color: var(--wrong);
+      color: #991b1b;
+      font-weight: 600;
     }
 
-    .option-btn.highlight-answer {
-      border-color: var(--correct-color);
+    .option-btn.highlight-correct {
+      border-color: var(--correct);
       background-color: #f0fdf4;
+      font-weight: 600;
     }
 
-    .explanation-box {
-      margin-top: 16px;
-      padding: 16px;
-      border-radius: 8px;
-      background-color: #f8fafc;
-      border: 1px solid var(--border-color);
+    /* 解説エリア */
+    .explanation-card {
       display: none;
+      background-color: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
     }
 
-    .explanation-box.show {
+    .explanation-card.active {
       display: block;
     }
 
     .result-title {
+      font-size: 1.1rem;
       font-weight: 700;
-      font-size: 1rem;
       margin-bottom: 8px;
     }
 
-    .result-title.correct {
-      color: var(--correct-color);
-    }
-
-    .result-title.incorrect {
-      color: var(--incorrect-color);
-    }
+    .result-title.correct { color: var(--correct); }
+    .result-title.wrong { color: var(--wrong); }
 
     .explanation-text {
-      font-size: 0.9rem;
-      color: var(--text-main);
+      font-size: 0.95rem;
+      color: #334155;
       white-space: pre-wrap;
     }
 
-    .notes-alert {
-      margin-top: 8px;
-      padding: 8px 12px;
-      background-color: var(--warning-bg);
-      color: #92400e;
-      border-radius: 6px;
-      font-size: 0.85rem;
-    }
-
-    .nav-buttons {
+    /* 下部固定フッター操作バー */
+    .fixed-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
       display: flex;
       justify-content: space-between;
-      margin-top: 20px;
+      gap: 12px;
+      z-index: 50;
+      box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
     }
 
-    .hidden {
-      display: none !important;
+    .nav-btn {
+      flex: 1;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: #fff;
+      color: var(--text);
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
 
-    #loading-view, #empty-view {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
+    .nav-btn:hover:not(:disabled) {
+      background-color: #f1f5f9;
+    }
+
+    .nav-btn.primary {
+      background-color: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .nav-btn.primary:hover:not(:disabled) {
+      background-color: var(--primary-hover);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="app-container">
     <header>
-      <h1>RCCM 資格試験 問題4-2（河川、砂防及び海岸・海洋部門）</h1>
-      <p class="subtitle">平成22年度〜令和元年度 過去問マスター演習</p>
+      <h1>RCCM 問題4-2（河川・砂防）</h1>
+      <span class="status-badge" id="progress-indicator">0 / 0</span>
     </header>
 
-    <div class="controls">
-      <div class="control-group">
-        <label for="year-select">年度選択:</label>
-        <select id="year-select">
-          <option value="ALL">全年度（250問）</option>
-          <option value="令和元年度">令和元年度 (2019)</option>
-          <option value="平成30年度">平成30年度 (2018)</option>
-          <option value="平成29年度">平成29年度 (2017)</option>
-          <option value="平成28年度">平成28年度 (2016)</option>
-          <option value="平成27年度">平成27年度 (2015)</option>
-          <option value="平成26年度">平成26年度 (2014)</option>
-          <option value="平成25年度">平成25年度 (2013)</option>
-          <option value="平成24年度">平成24年度 (2012)</option>
-          <option value="平成23年度">平成23年度 (2011)</option>
-          <option value="平成22年度">平成22年度 (2010)</option>
-        </select>
-      </div>
-      <div class="control-group">
-        <button id="shuffle-btn">🔀 ランダム出題</button>
-        <button id="reset-btn">🔄 リセット</button>
-      </div>
-    </div>
-
-    <div id="loading-view">データを読み込み中...</div>
-
-    <div id="quiz-view" class="hidden">
-      <div class="status-bar">
-        <span id="progress-text">問題 1 / 250</span>
-        <span id="score-text">正解率: 0% (0/0)</span>
+    <main>
+      <div class="meta-info">
+        <span class="badge" id="era-badge">-</span>
+        <span class="badge" id="qno-badge">-</span>
       </div>
 
-      <div class="card">
-        <div class="q-header">
-          <div>
-            <span id="q-year-no" class="q-badge">平成22年度 問1</span>
-            <span id="q-multiple-badge" class="q-flag-badge badge-multiple hidden">複数正解</span>
-          </div>
-          <span id="q-id-text" style="font-size: 0.8rem; color: var(--text-muted);"></span>
-        </div>
+      <div class="question-text" id="question-text">読み込み中...</div>
 
-        <div id="q-text" class="q-text"></div>
-
-        <div id="q-image-container" class="q-image-container hidden">
-          <img id="q-image" src="" alt="問題の図">
-        </div>
-
-        <div class="options">
-          <button class="option-btn" data-choice="a"><strong style="min-width: 20px;">a.</strong> <span id="opt-a"></span></button>
-          <button class="option-btn" data-choice="b"><strong style="min-width: 20px;">b.</strong> <span id="opt-b"></span></button>
-          <button class="option-btn" data-choice="c"><strong style="min-width: 20px;">c.</strong> <span id="opt-c"></span></button>
-          <button class="option-btn" data-choice="d"><strong style="min-width: 20px;">d.</strong> <span id="opt-d"></span></button>
-        </div>
-
-        <div id="explanation-box" class="explanation-box">
-          <div id="result-title" class="result-title"></div>
-          <div id="explanation-text" class="explanation-text"></div>
-          <div id="notes-box" class="notes-alert hidden"></div>
-        </div>
+      <!-- 画像表示エリア -->
+      <div class="figure-container" id="figure-container">
+        <img id="figure-img" src="" alt="問題の図・表">
       </div>
 
-      <div class="nav-buttons">
-        <button id="prev-btn" class="btn-primary" disabled>⬅ 前の問題</button>
-        <button id="next-btn" class="btn-primary">次の問題 ➡</button>
-      </div>
-    </div>
+      <div class="options-list" id="options-container"></div>
 
-    <div id="empty-view" class="hidden">
-      該当する問題がありません。
-    </div>
+      <div class="explanation-card" id="explanation-card">
+        <div class="result-title" id="result-title"></div>
+        <div class="explanation-text" id="explanation-text"></div>
+      </div>
+    </main>
+
+    <!-- 画面下部に固定されるナビゲーションバー -->
+    <footer class="fixed-footer">
+      <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">前の問題</button>
+      <button class="nav-btn primary" id="next-btn" onclick="nextQuestion()">次の問題</button>
+    </footer>
   </div>
 
   <script src="rccm_data4_2.js"></script>
   <script>
-    (function () {
-      let allItems = [];
-      let currentItems = [];
-      let currentIndex = 0;
-      let userAnswers = {};
-      let stats = { answered: 0, correct: 0 };
+    let questions = [];
+    let currentIndex = 0;
+    let answeredState = {};
 
-      const loadingView = document.getElementById('loading-view');
-      const quizView = document.getElementById('quiz-view');
-      const emptyView = document.getElementById('empty-view');
-      const yearSelect = document.getElementById('year-select');
-      const shuffleBtn = document.getElementById('shuffle-btn');
-      const resetBtn = document.getElementById('reset-btn');
-      const progressText = document.getElementById('progress-text');
-      const scoreText = document.getElementById('score-text');
-      const qYearNo = document.getElementById('q-year-no');
-      const qMultipleBadge = document.getElementById('q-multiple-badge');
-      const qIdText = document.getElementById('q-id-text');
-      const qText = document.getElementById('q-text');
-      const qImageContainer = document.getElementById('q-image-container');
-      const qImage = document.getElementById('q-image');
-      const optA = document.getElementById('opt-a');
-      const optB = document.getElementById('opt-b');
-      const optC = document.getElementById('opt-c');
-      const optD = document.getElementById('opt-d');
-      const optionButtons = document.querySelectorAll('.option-btn');
-      const explanationBox = document.getElementById('explanation-box');
-      const resultTitle = document.getElementById('result-title');
-      const explanationText = document.getElementById('explanation-text');
-      const notesBox = document.getElementById('notes-box');
-      const prevBtn = document.getElementById('prev-btn');
-      const nextBtn = document.getElementById('next-btn');
-
-      function init() {
-        if (!window.RCCM_DATA4_2 || !Array.isArray(window.RCCM_DATA4_2.items)) {
-          loadingView.textContent = "データの読み込みに失敗しました (rccm_data4_2.js が正しく配置されているか確認してください)。";
-          return;
-        }
-        allItems = window.RCCM_DATA4_2.items;
-        filterItems();
+    window.onload = function() {
+      if (typeof rccm_data4_2 !== 'undefined') {
+        questions = rccm_data4_2.questions;
+      } else if (typeof rccm_data !== 'undefined') {
+        questions = rccm_data.questions;
       }
 
-      function filterItems() {
-        const selectedYear = yearSelect.value;
-        if (selectedYear === 'ALL') {
-          currentItems = [...allItems];
-        } else {
-          currentItems = allItems.filter(item => item.era_year === selectedYear);
-        }
+      if (questions && questions.length > 0) {
+        renderQuestion(currentIndex);
+      } else {
+        document.getElementById('question-text').innerText = 'データの読み込みに失敗しました。';
+      }
+    };
 
-        currentIndex = 0;
-        userAnswers = {};
-        updateStats();
+    function renderQuestion(index) {
+      const q = questions[index];
+      document.getElementById('progress-indicator').innerText = `${index + 1} / ${questions.length}`;
+      document.getElementById('era-badge').innerText = q.era_year;
+      document.getElementById('qno-badge').innerText = `問${q.q_no}`;
+      document.getElementById('question-text').innerText = q.question;
 
-        if (currentItems.length === 0) {
-          loadingView.classList.add('hidden');
-          quizView.classList.add('hidden');
-          emptyView.classList.remove('hidden');
-        } else {
-          loadingView.classList.add('hidden');
-          emptyView.classList.add('hidden');
-          quizView.classList.remove('hidden');
-          renderQuestion();
-        }
+      // 画像の表示・非表示判定
+      const figContainer = document.getElementById('figure-container');
+      const figImg = document.getElementById('figure-img');
+      if (q.figure_image) {
+        figImg.src = q.figure_image;
+        figContainer.classList.add('active');
+      } else {
+        figContainer.classList.remove('active');
+        figImg.src = '';
       }
 
-      function updateStats() {
-        let answeredCount = 0;
-        let correctCount = 0;
+      const container = document.getElementById('options-container');
+      container.innerHTML = '';
 
-        currentItems.forEach(item => {
-          const ans = userAnswers[item.id];
-          if (ans) {
-            answeredCount++;
-            const correctArr = item.correct.split('|');
-            if (correctArr.includes(ans)) {
-              correctCount++;
-            }
-          }
-        });
+      const expCard = document.getElementById('explanation-card');
+      expCard.classList.remove('active');
 
-        stats.answered = answeredCount;
-        stats.correct = correctCount;
+      const options = [
+        { key: 'a', text: q.option_a },
+        { key: 'b', text: q.option_b },
+        { key: 'c', text: q.option_c },
+        { key: 'd', text: q.option_d }
+      ];
 
-        const percentage = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
-        scoreText.textContent = `正解率: ${percentage}% (${correctCount}/${answeredCount})`;
-      }
+      const userChoice = answeredState[q.id];
 
-      function renderQuestion() {
-        const item = currentItems[currentIndex];
-        if (!item) return;
+      options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<strong>${opt.key.toUpperCase()}.</strong> <span>${opt.text}</span>`;
+        btn.onclick = () => selectOption(opt.key);
 
-        progressText.textContent = `問題 ${currentIndex + 1} / ${currentItems.length}`;
-        qYearNo.textContent = `${item.era_year} 問${item.q_no}`;
-        qIdText.textContent = item.id;
-        qText.textContent = item.question;
-
-        if (item.figure_image) {
-          qImage.src = item.figure_image;
-          qImageContainer.classList.remove('hidden');
-        } else {
-          qImage.src = "";
-          qImageContainer.classList.add('hidden');
-        }
-
-        optA.textContent = item.option_a;
-        optB.textContent = item.option_b;
-        optC.textContent = item.option_c;
-        optD.textContent = item.option_d;
-
-        const isMultiple = item.correct.includes('|');
-        if (isMultiple) {
-          qMultipleBadge.classList.remove('hidden');
-        } else {
-          qMultipleBadge.classList.add('hidden');
-        }
-
-        optionButtons.forEach(btn => {
-          btn.className = 'option-btn';
-          btn.disabled = false;
-        });
-        explanationBox.classList.remove('show');
-        notesBox.classList.add('hidden');
-
-        const answeredChoice = userAnswers[item.id];
-        if (answeredChoice) {
-          showResult(item, answeredChoice);
-        }
-
-        prevBtn.disabled = currentIndex === 0;
-        nextBtn.disabled = currentIndex === currentItems.length - 1;
-      }
-
-      function showResult(item, userChoice) {
-        const correctList = item.correct.split('|');
-        const isCorrect = correctList.includes(userChoice);
-
-        optionButtons.forEach(btn => {
+        if (userChoice) {
           btn.disabled = true;
-          const choice = btn.dataset.choice;
-
-          if (choice === userChoice) {
-            btn.classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
+          if (opt.key === q.correct) {
+            btn.classList.add('highlight-correct');
           }
-          if (correctList.includes(choice)) {
-            btn.classList.add('highlight-answer');
+          if (opt.key === userChoice) {
+            btn.classList.add(userChoice === q.correct ? 'selected-correct' : 'selected-wrong');
           }
-        });
-
-        if (isCorrect) {
-          resultTitle.textContent = "✅ 正解！";
-          resultTitle.className = "result-title correct";
-        } else {
-          resultTitle.textContent = `❌ 不正解... (正解: ${correctList.join(' / ')})`;
-          resultTitle.className = "result-title incorrect";
         }
 
-        explanationText.textContent = item.explanation || "解説はありません。";
+        container.appendChild(btn);
+      });
 
-        if (item.notes) {
-          notesBox.textContent = `【注釈】${item.notes}`;
-          notesBox.classList.remove('hidden');
-        } else {
-          notesBox.classList.add('hidden');
-        }
-
-        explanationBox.classList.add('show');
+      if (userChoice) {
+        showExplanation(userChoice === q.correct, q);
       }
 
-      optionButtons.forEach(btn => {
-        btn.addEventListener('click', function () {
-          const item = currentItems[currentIndex];
-          const choice = this.dataset.choice;
+      document.getElementById('prev-btn').disabled = (index === 0);
+      document.getElementById('next-btn').disabled = (index === questions.length - 1);
 
-          userAnswers[item.id] = choice;
-          updateStats();
-          showResult(item, choice);
-        });
-      });
+      window.scrollTo(0, 0);
+    }
 
-      prevBtn.addEventListener('click', () => {
-        if (currentIndex > 0) {
-          currentIndex--;
-          renderQuestion();
-        }
-      });
+    function selectOption(selectedKey) {
+      const q = questions[currentIndex];
+      if (answeredState[q.id]) return;
 
-      nextBtn.addEventListener('click', () => {
-        if (currentIndex < currentItems.length - 1) {
-          currentIndex++;
-          renderQuestion();
-        }
-      });
+      answeredState[q.id] = selectedKey;
+      renderQuestion(currentIndex);
+    }
 
-      yearSelect.addEventListener('change', filterItems);
+    function showExplanation(isCorrect, q) {
+      const expCard = document.getElementById('explanation-card');
+      const resTitle = document.getElementById('result-title');
+      const expText = document.getElementById('explanation-text');
 
-      shuffleBtn.addEventListener('click', () => {
-        for (let i = currentItems.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [currentItems[i], currentItems[j]] = [currentItems[j], currentItems[i]];
-        }
-        currentIndex = 0;
-        renderQuestion();
-      });
+      resTitle.innerText = isCorrect ? '正解！' : `不正解（正解: ${q.correct.toUpperCase()}）`;
+      resTitle.className = `result-title ${isCorrect ? 'correct' : 'wrong'}`;
+      expText.innerText = q.explanation || '解説はありません。';
+      expCard.classList.add('active');
+    }
 
-      resetBtn.addEventListener('click', () => {
-        userAnswers = {};
-        updateStats();
-        renderQuestion();
-      });
+    function prevQuestion() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderQuestion(currentIndex);
+      }
+    }
 
-      window.addEventListener('DOMContentLoaded', init);
-    })();
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) {
+        currentIndex++;
+        renderQuestion(currentIndex);
+      }
+    }
   </script>
 </body>
 </html>
