@@ -44,7 +44,6 @@
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
     }
 
-    /* ヘッダー */
     header {
       padding: 16px;
       border-bottom: 1px solid var(--border);
@@ -72,10 +71,9 @@
       font-weight: 600;
     }
 
-    /* メインコンテンツ（スクロール領域） */
     main {
       flex: 1;
-      padding: 16px 16px 90px; /* 固定フッターと重ならないよう下部余白を確保 */
+      padding: 16px 16px 90px;
       overflow-y: auto;
     }
 
@@ -101,7 +99,6 @@
       white-space: pre-wrap;
     }
 
-    /* 問題画像コンテナ */
     .figure-container {
       display: none;
       margin-bottom: 16px;
@@ -119,7 +116,6 @@
       border: 1px solid var(--border);
     }
 
-    /* 選択肢 */
     .options-list {
       display: flex;
       flex-direction: column;
@@ -167,7 +163,6 @@
       font-weight: 600;
     }
 
-    /* 解説エリア */
     .explanation-card {
       display: none;
       background-color: #f8fafc;
@@ -196,7 +191,6 @@
       white-space: pre-wrap;
     }
 
-    /* 下部固定フッター操作バー */
     .fixed-footer {
       position: fixed;
       bottom: 0;
@@ -265,7 +259,6 @@
 
       <div class="question-text" id="question-text">読み込み中...</div>
 
-      <!-- 画像表示エリア -->
       <div class="figure-container" id="figure-container">
         <img id="figure-img" src="" alt="問題の図・表">
       </div>
@@ -278,7 +271,6 @@
       </div>
     </main>
 
-    <!-- 画面下部に固定されるナビゲーションバー -->
     <footer class="fixed-footer">
       <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">前の問題</button>
       <button class="nav-btn primary" id="next-btn" onclick="nextQuestion()">次の問題</button>
@@ -291,11 +283,18 @@
     let currentIndex = 0;
     let answeredState = {};
 
+    function extractQuestions(raw) {
+      if (!raw) return [];
+      if (Array.isArray(raw)) return raw;
+      if (raw.questions && Array.isArray(raw.questions)) return raw.questions;
+      return [];
+    }
+
     window.onload = function() {
       if (typeof rccm_data4_2 !== 'undefined') {
-        questions = rccm_data4_2.questions;
+        questions = extractQuestions(rccm_data4_2);
       } else if (typeof rccm_data !== 'undefined') {
-        questions = rccm_data.questions;
+        questions = extractQuestions(rccm_data);
       }
 
       if (questions && questions.length > 0) {
@@ -308,11 +307,10 @@
     function renderQuestion(index) {
       const q = questions[index];
       document.getElementById('progress-indicator').innerText = `${index + 1} / ${questions.length}`;
-      document.getElementById('era-badge').innerText = q.era_year;
-      document.getElementById('qno-badge').innerText = `問${q.q_no}`;
+      document.getElementById('era-badge').innerText = q.era_year || '';
+      document.getElementById('qno-badge').innerText = `問${q.q_no || (index + 1)}`;
       document.getElementById('question-text').innerText = q.question;
 
-      // 画像の表示・非表示判定
       const figContainer = document.getElementById('figure-container');
       const figImg = document.getElementById('figure-img');
       if (q.figure_image) {
@@ -336,7 +334,7 @@
         { key: 'd', text: q.option_d }
       ];
 
-      const userChoice = answeredState[q.id];
+      const userChoice = answeredState[q.id || index];
 
       options.forEach(opt => {
         const btn = document.createElement('button');
@@ -369,9 +367,10 @@
 
     function selectOption(selectedKey) {
       const q = questions[currentIndex];
-      if (answeredState[q.id]) return;
+      const keyId = q.id || currentIndex;
+      if (answeredState[keyId]) return;
 
-      answeredState[q.id] = selectedKey;
+      answeredState[keyId] = selectedKey;
       renderQuestion(currentIndex);
     }
 
@@ -380,7 +379,7 @@
       const resTitle = document.getElementById('result-title');
       const expText = document.getElementById('explanation-text');
 
-      resTitle.innerText = isCorrect ? '正解！' : `不正解（正解: ${q.correct.toUpperCase()}）`;
+      resTitle.innerText = isCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
       resTitle.className = `result-title ${isCorrect ? 'correct' : 'wrong'}`;
       expText.innerText = q.explanation || '解説はありません。';
       expCard.classList.add('active');
