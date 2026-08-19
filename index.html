@@ -283,18 +283,9 @@
     let currentIndex = 0;
     let answeredState = {};
 
-    function extractQuestions(raw) {
-      if (!raw) return [];
-      if (Array.isArray(raw)) return raw;
-      if (raw.questions && Array.isArray(raw.questions)) return raw.questions;
-      return [];
-    }
-
     window.onload = function() {
-      if (typeof rccm_data4_2 !== 'undefined') {
-        questions = extractQuestions(rccm_data4_2);
-      } else if (typeof rccm_data !== 'undefined') {
-        questions = extractQuestions(rccm_data);
+      if (typeof window.RCCM_DATA4_2 !== 'undefined' && window.RCCM_DATA4_2.items) {
+        questions = window.RCCM_DATA4_2.items;
       }
 
       if (questions && questions.length > 0) {
@@ -382,6 +373,11 @@
       resTitle.innerText = isCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
       resTitle.className = `result-title ${isCorrect ? 'correct' : 'wrong'}`;
       expText.innerText = q.explanation || '解説はありません。';
+
+      if (q.notes) {
+        expText.innerText += `\n\n【注記】${q.notes}`;
+      }
+
       expCard.classList.add('active');
     }
 
