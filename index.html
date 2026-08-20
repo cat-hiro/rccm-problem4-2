@@ -71,6 +71,27 @@
       font-weight: 600;
     }
 
+    /* コントロールエリア（年度選択） */
+    .controls {
+      padding: 12px 16px;
+      background-color: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .controls select {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+      background-color: var(--bg);
+      color: var(--text);
+      cursor: pointer;
+    }
+
     main {
       flex: 1;
       padding: 16px 16px 90px;
@@ -251,6 +272,12 @@
       <span class="status-badge" id="progress-indicator">0 / 0</span>
     </header>
 
+    <div class="controls">
+      <select id="year-select" onchange="startQuiz()">
+        <option value="all">全年度（ランダム出題）</option>
+      </select>
+    </div>
+
     <main>
       <div class="meta-info">
         <span class="badge" id="era-badge">-</span>
@@ -279,27 +306,66 @@
 
   <script src="rccm_data4_2.js"></script>
   <script>
-    let questions = [];
+    let allQuestions = [];      
+    let currentQuestions = [];  
     let currentIndex = 0;
     let answeredState = {};
 
     window.onload = function() {
       if (typeof window.RCCM_DATA4_2 !== 'undefined' && window.RCCM_DATA4_2.items) {
-        questions = window.RCCM_DATA4_2.items;
+        allQuestions = window.RCCM_DATA4_2.items;
       }
 
-      if (questions && questions.length > 0) {
-        renderQuestion(currentIndex);
+      if (allQuestions && allQuestions.length > 0) {
+        initYearSelect();
+        startQuiz();
       } else {
         document.getElementById('question-text').innerText = 'データの読み込みに失敗しました。';
       }
     };
 
+    function initYearSelect() {
+      const select = document.getElementById('year-select');
+      const years = [...new Set(allQuestions.map(q => q.era_year))];
+      years.forEach(year => {
+        if (year) {
+          const option = document.createElement('option');
+          option.value = year;
+          option.innerText = year + '（ランダム）';
+          select.appendChild(option);
+        }
+      });
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function startQuiz() {
+      const selectedYear = document.getElementById('year-select').value;
+      
+      if (selectedYear === 'all') {
+        currentQuestions = [...allQuestions];
+      } else {
+        currentQuestions = allQuestions.filter(q => q.era_year === selectedYear);
+      }
+      
+      shuffleArray(currentQuestions);
+      
+      currentIndex = 0;
+      answeredState = {};
+      
+      renderQuestion(currentIndex);
+    }
+
     function renderQuestion(index) {
-      const q = questions[index];
-      document.getElementById('progress-indicator').innerText = `${index + 1} / ${questions.length}`;
+      const q = currentQuestions[index];
+      document.getElementById('progress-indicator').innerText = `${index + 1} / ${currentQuestions.length}`;
       document.getElementById('era-badge').innerText = q.era_year || '';
-      document.getElementById('qno-badge').innerText = `問${q.q_no || (index + 1)}`;
+      document.getElementById('qno-badge').innerText = `問${q.q_no || '-'}`;
       document.getElementById('question-text').innerText = q.question;
 
       const figContainer = document.getElementById('figure-container');
@@ -325,7 +391,7 @@
         { key: 'd', text: q.option_d }
       ];
 
-      const userChoice = answeredState[q.id || index];
+      const userChoice = answeredState[q.id];
 
       options.forEach(opt => {
         const btn = document.createElement('button');
@@ -335,11 +401,11 @@
 
         if (userChoice) {
           btn.disabled = true;
-          if (opt.key === q.correct) {
+          if (q.correct.includes(opt.key)) {
             btn.classList.add('highlight-correct');
           }
           if (opt.key === userChoice) {
-            btn.classList.add(userChoice === q.correct ? 'selected-correct' : 'selected-wrong');
+            btn.classList.add(q.correct.includes(userChoice) ? 'selected-correct' : 'selected-wrong');
           }
         }
 
@@ -347,17 +413,17 @@
       });
 
       if (userChoice) {
-        showExplanation(userChoice === q.correct, q);
+        showExplanation(q.correct.includes(userChoice), q, userChoice);
       }
 
       document.getElementById('prev-btn').disabled = (index === 0);
-      document.getElementById('next-btn').disabled = (index === questions.length - 1);
+      document.getElementById('next-btn').disabled = (index === currentQuestions.length - 1);
 
       window.scrollTo(0, 0);
     }
 
     function selectOption(selectedKey) {
-      const q = questions[currentIndex];
+      const q = currentQuestions[currentIndex];
       const keyId = q.id || currentIndex;
       if (answeredState[keyId]) return;
 
@@ -365,13 +431,13 @@
       renderQuestion(currentIndex);
     }
 
-    function showExplanation(isCorrect, q) {
+    function showExplanation(isActuallyCorrect, q, selectedKey) {
       const expCard = document.getElementById('explanation-card');
       const resTitle = document.getElementById('result-title');
       const expText = document.getElementById('explanation-text');
 
-      resTitle.innerText = isCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
-      resTitle.className = `result-title ${isCorrect ? 'correct' : 'wrong'}`;
+      resTitle.innerText = isActuallyCorrect ? '正解！' : `不正解（正解: ${q.correct ? q.correct.toUpperCase() : '-'}）`;
+      resTitle.className = `result-title ${isActuallyCorrect ? 'correct' : 'wrong'}`;
       expText.innerText = q.explanation || '解説はありません。';
 
       if (q.notes) {
@@ -389,7 +455,7 @@
     }
 
     function nextQuestion() {
-      if (currentIndex < questions.length - 1) {
+      if (currentIndex < currentQuestions.length - 1) {
         currentIndex++;
         renderQuestion(currentIndex);
       }
